@@ -36,3 +36,44 @@ async def finish(
     """
     logger.info(reason, extra={"title": "Shutting down...\n"})
     return reason
+
+
+@action(
+    name="create_vm",
+    description ="This function creates a virtual machine (VM). If vm_name not provided, use ask_user to know about virtual machine name.",
+    parameters= [
+    {
+        "name" : "vm_name",
+        "description" : "The name of the virtual machine to be created.",
+        "type" : "string",
+        "required" : True,
+    }
+    ],
+    output_type="None"
+)
+async def create_vm(agent,
+                   task_id: str,
+                   vm_name: str,) -> str:
+    print(f"\n########### : {vm_name}")
+    
+    return vm_name
+
+@action(
+    name="ask_user",
+    description ="If you need more details or information regarding the given goals,"
+        " you can ask the user for input",
+    parameters= [
+    {
+        "name" : "question",
+        "description" : "The question or prompt to the user",
+        "type" : "string",
+        "required" : True,
+    }
+    ],
+    output_type="None"
+)
+async def ask_user(agent,
+                   task_id: str,
+                   question: str,) -> str:
+    print(f"\nQ: {question}")
+    return "str"
