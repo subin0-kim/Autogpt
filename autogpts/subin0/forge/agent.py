@@ -79,6 +79,8 @@ class ForgeAgent(Agent):
         """
         super().__init__(database, workspace)
         self.abilities = ActionRegister(self)
+        self.step_history = {}
+        self.current_step = {}
 
     async def create_task(self, task_request: TaskRequestBody) -> Task:
         """
@@ -90,9 +92,14 @@ class ForgeAgent(Agent):
         want here.
         """
         task = await super().create_task(task_request)
+        
         LOG.info(
             f"📦 Task created: {task.task_id} input: {task.input[:40]}{'...' if len(task.input) > 40 else ''}"
         )
+
+        self.step_history[task.task_id] = []
+        self.current_step[task.task_id] = 0
+
         return task
 
     async def execute_step(self, task_id: str, step_request: StepRequestBody) -> Step:
@@ -125,6 +132,10 @@ class ForgeAgent(Agent):
 
         # Load the task prompt with the defined task parameters
         task_prompt = prompt_engine.load_prompt("task-step", **task_kwargs)
+        if len(self.step_history[task_id]) > 0:
+            task_prompt += "## Progress\n\n"
+        for x in self.step_history[task_id]:
+            task_prompt += x
 
         # Append the task prompt to the messages list
         messages.append({"role": "user", "content": task_prompt})
@@ -157,6 +168,8 @@ class ForgeAgent(Agent):
         output = await self.abilities.run_action(
             task_id, ability["name"], **ability["args"]
         )
+        self.current_step[task_id] += 1
+        self.step_history[task_id].append(f"Step {self.current_step[task_id]}: Executed {ability['name']}({ability['args']})\n- **Reasoning:** {answer['thoughts']['reasoning']}\n- **Status:** `success`\n- **Output:** {output}\n")
 
         # Set the step output to the "speak" part of the answer
         step.output = answer["thoughts"]["speak"]

@@ -390,7 +390,7 @@ async def run_auto_gpt_server(
     )
 
     # TODO: fill in llm values here
-    assert_config_has_openai_api_key(config)
+    # assert_config_has_openai_api_key(config)
 
     await apply_overrides_to_config(
         config=config,

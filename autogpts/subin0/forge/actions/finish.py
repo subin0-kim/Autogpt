@@ -1,6 +1,7 @@
 from forge.sdk.forge_log import ForgeLogger
 
 from .registry import action
+import asyncio
 
 logger = ForgeLogger(__name__)
 
@@ -40,7 +41,7 @@ async def finish(
 
 @action(
     name="create_vm",
-    description ="This function creates a virtual machine (VM). If vm_name not provided, use ask_user to know about virtual machine name.",
+    description ="This function creates a virtual machine (VM). If vm_name not provided, use ask_user to know about virtual machine name",
     parameters= [
     {
         "name" : "vm_name",
@@ -49,14 +50,49 @@ async def finish(
         "required" : True,
     }
     ],
-    output_type="None"
+    output_type="str"
 )
 async def create_vm(agent,
                    task_id: str,
-                   vm_name: str,) -> str:
+                   vm_name: str
+                   ) -> str:
     print(f"\n########### : {vm_name}")
     
     return vm_name
+
+# @action(
+#     name="create_vm",
+#     description ="This function creates a virtual machine (VM). If vm_name or api_key not provided, use ask_user to know about virtual machine name or api key.",
+#     parameters= [
+#     {
+#         "name" : "vm_name",
+#         "description" : "The name of the virtual machine to be created.",
+#         "type" : "string",
+#         "required" : True,
+#     },
+#     {
+#         "name" : "api_key",
+#         "description" : "API KEY to check resource creation permissions.",
+#         "type" : "string",
+#         "required" : True,
+#     },
+#     {
+#         "name" : "tags",
+#         "description" : "Tag for resource confirmation.",
+#         "type" : "string",
+#         "required" : False,
+#     }
+#     ],
+#     output_type="None"
+# )
+# async def create_vm(agent,
+#                    task_id: str,
+#                    vm_name: str,
+#                    api_key: str,
+#                    tags: str) -> str:
+#     print(f"\n########### : {vm_name}")
+    
+#     return vm_name
 
 @action(
     name="ask_user",
@@ -76,4 +112,5 @@ async def ask_user(agent,
                    task_id: str,
                    question: str,) -> str:
     print(f"\nQ: {question}")
-    return "str"
+    # response = await asyncio.get_event_loop().run_in_executor(None, input)
+    return "name-vm"
